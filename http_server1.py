@@ -26,8 +26,10 @@ while True:
     #a. Accept a new connection on the accept socket.
     client_connection, client_address = sock.accept()
 
+    print(f"Connected by {client_address}")
+
     #b. Read the HTTP request from the connection socket and parse it. 
-    request = client_connection.recv(1024).decode()
+    request = client_connection.recv(1024).decode('utf-8')
     filename = request.split()[1].split('/')[1]
 
     
@@ -51,7 +53,7 @@ while True:
             response = "HTTP/1.0 404 Not Found\r\n\r\n"
             
 
-    client_connection.sendall(response.encode())
+    client_connection.sendall(response.encode("utf-8"))
     client_connection.close()
    
 #f. Close the connection socket.
