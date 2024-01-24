@@ -1,3 +1,1 @@
-import sys
-sys.stdout.write("geeks")
-
+GET /rfc2616.html HTTP/1.1
