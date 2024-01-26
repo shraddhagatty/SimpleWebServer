@@ -3,7 +3,7 @@ import socket
 import json 
 
 def main():
-    
+
     if len(sys.argv) != 2: 
         sys.stderr.write("Must give port number\n")
         sys.exit(1)
@@ -68,7 +68,9 @@ def server(port):
                         else: #if it is a number, append it to the list
                             if num == "inf" or num == "-inf":
                                 operands.append("inf")
-                            else: 
+                            elif float(num).is_integer():  
+                                operands.append(int(num)) 
+                            else:
                                 operands.append(float(num)) 
 
                      
@@ -79,12 +81,11 @@ def server(port):
                             result = "inf"
                         elif result == float("-inf"):
                             result = "-inf"
+                        elif result.is_integer():
+                            result = int(result)
 
-                        body = {
-                            'operation': 'product', 
-                            'operands': operands, 
-                            'result': result
-                        }
+                        body = {'operation': 'product', 'operands': operands, 'result': result}
+                        
                         response = "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n" + json.dumps(body) + "\r\n\r\n"
 
         #send response and close connection
