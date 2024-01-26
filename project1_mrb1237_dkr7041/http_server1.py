@@ -34,21 +34,20 @@ while True:
             request += req
             if "\r\n\r\n" in request:
                 break
-
-        # Parse the request
-        method, path, _ = request.split(" ", 2)
-        filename = os.path.abspath(os.path.join(os.getcwd(), path[1:]))
-
+        filename = request.split()[1].split('/')[-1]
         
         #Check to see if the requested file requested exists (and ends with ".htm" or ".html").
 
-        if os.path.exists(filename) and (filename.endswith(".html") or filename.endswith(".htm")):
+        if os.path.isfile(filename) and (filename.endswith(".html") or filename.endswith(".htm")):
 
             #d. If the file exists, construct the appropriate HTTP response write the HTTP header to the connection socket
+            
             with open(filename, "rb") as f:
                 content = f.read().decode('utf-8')
+            
             content_type = "text/html"
             content_length = len(content)
+            #print(content_length)
 
             response = f"HTTP/1.0 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {content_length}\r\n\r\n{content}"
 

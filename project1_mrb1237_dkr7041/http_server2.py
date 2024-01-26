@@ -57,19 +57,11 @@ try:
                         open_connections.remove(sock)
                         continue
 
-                   # filename = request.split()[1].split('/')[-1]
-                   # Parse the request
-                    method, path, _ = request.split(" ", 2)
-                    filename = os.path.abspath(os.path.join(os.getcwd(), path[1:]))
+                    filename = request.split()[1].split('/')[-1]
 
-                    if os.path.exists(filename) and (filename.endswith(".html") or filename.endswith(".htm")):
+                    if os.path.isfile(filename) and (filename.endswith(".html") or filename.endswith(".htm")):
                         with open(filename, "rb") as f:
                             content = f.read().decode('utf-8')
-
-                        content_type = "text/html"
-                        content_length = len(content)
-
-                        response = f"HTTP/1.0 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {content_length}\r\n\r\n{content}"
                 
                         response = "HTTP/1.0 200 OK\r\n\r\n" + content
 
