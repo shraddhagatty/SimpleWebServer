@@ -44,7 +44,12 @@ try:
                 #Existing Connection
                 try:
 
-                    request = sock.recv(1024).decode('utf-8')
+                    request=""
+                    while True:
+                        req = sock.recv(1024).decode('utf-8')
+                        request += req
+                        if "\r\n\r\n" in request:
+                            break
 
                     # Ignore empty or non GET requests
                     if not request or not request.startswith("GET"):
