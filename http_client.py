@@ -4,7 +4,7 @@ import re
 
 def main():
     if len(sys.argv) != 2: 
-        sys.stderr.write("Must give one url\n")
+        #sys.stderr.write("Must give one url\n")
         sys.exit(1)
     
     curl_clone(sys.argv[1])
@@ -16,12 +16,15 @@ def curl_clone(hostname, retry = 0):
     port = 80 
 
     if retry >= 10: 
-        sys.stderr.write("Number of retries on redirect reached max of 10\n")
+        #sys.stderr.write("Number of retries on redirect reached max of 10\n")
         sys.exit(10)
     
     endpoint = "/"
-    if not hostname.startswith("http://"): 
-        sys.stderr.write("Url does not begin with 'http://'\n")
+    if hostname.startswith("https://"): 
+        sys.stderr.write("Trying to access a secure page\n")
+        sys.exit(1)
+    elif not hostname.startswith("http://"): 
+        #sys.stderr.write("Url does not begin with 'http://'\n")
         sys.exit(2)
     else: 
         hostname = hostname[7:]
@@ -48,8 +51,8 @@ def curl_clone(hostname, retry = 0):
 
     header = s.recv(1024)
     if header == "": 
-        sys.stderr.write("Response is empty\n")
-        sys.exit(1)
+        #sys.stderr.write("Response is empty\n")
+        sys.exit(3)
     
     header = header.decode()
     content_length = re.search("Content-Length:", header)
@@ -64,7 +67,6 @@ def curl_clone(hostname, retry = 0):
             if part_response == b"": 
                 break
             response += part_response
-
     else:
         buff = int(header[content_length.end():].split("\n")[0].strip()) - response_so_far
         response = b""
@@ -72,9 +74,10 @@ def curl_clone(hostname, retry = 0):
             part_response = s.recv(1048576)
             response += part_response
 
+
     if response == "": 
-        sys.stderr.write("Response is empty\n")
-        sys.exit(1)
+        #sys.stderr.write("Response is empty\n")
+        sys.exit(3)
     #check response and status code
     response = response.decode()
     body = header[header.find("<"):] + response
@@ -86,8 +89,8 @@ def curl_clone(hostname, retry = 0):
         content_type = re.search("Content-Type: text/html", header)
 
         if content_type == None:  #check content type is text/html
-            sys.stderr.write("Content type is not text/html\n")
-            sys.exit(5)
+            #sys.stderr.write("Content type is not text/html\n")
+            sys.exit(4)
 
         sys.stdout.write(body)
         sys.exit(0)
@@ -99,8 +102,8 @@ def curl_clone(hostname, retry = 0):
         curl_clone(new_url.strip(), retry=retry+1)
     elif status_code >= 400: 
         sys.stdout.write(body)
-        sys.stderr.write("Error code >= 400\n")
-        sys.exit(4)
+        #sys.stderr.write("Error code >= 400\n")
+        sys.exit(5)
 
     s.close()
 
