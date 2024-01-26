@@ -1,6 +1,7 @@
 import sys 
 import socket 
 import json 
+import re
 
 def main():
 
@@ -37,9 +38,15 @@ def server(port):
         print(f"Connected by {client_address}")
 
         #receive request 
-        request = client_connection.recv(1024).decode('utf-8')
+        request = b""
+        while True: 
+            part_request = client_connection.recv(1024)
+            request += part_request
+            if re.search(b"\r\n\r\n", request) != None: 
+                break
+        request = request.decode('utf-8').strip()
+
         response = None
-        
         if not request.startswith("GET "):
             response = "HTTP/1.0 400 Bad Request\r\n\r\n"
         elif not request[4:].startswith("/product"): 
@@ -52,7 +59,7 @@ def server(port):
                 response = "HTTP/1.0 400 Bad Request\r\n\r\n"
             else:
                 if len(params_list) < 2: #make sure there are at least two params
-                    response = "HTTP/1.0 404 Not Found\r\n\r\n"
+                    response = "HTTP/1.0 400 Bad Request\r\n\r\n"
                 else:
                     operands = []
                     result = 1

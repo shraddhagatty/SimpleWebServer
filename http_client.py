@@ -3,6 +3,10 @@ import socket
 import re
 
 def main():
+    if len(sys.argv) != 2: 
+        sys.stderr.write("Must give one url\n")
+        sys.exit(1)
+    
     curl_clone(sys.argv[1])
 
 
@@ -29,8 +33,6 @@ def curl_clone(hostname, retry = 0):
                 endpoint_index = -1
             endpoint = hostname[endpoint_index:]
             hostname = hostname[:endpoint_index]
-        # if hostname[:4] == "www.": 
-        #     hostname = hostname[4:]
         
     #create socket and TCP connection
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,9 +95,7 @@ def curl_clone(hostname, retry = 0):
         #url is after location in header
         location = re.search("Location:", header) or re.search("location:", header)
         new_url = header[location.end():].split("\n")[0]
-
         sys.stderr.write(f"Redirected to: {new_url.strip()}\n")
-        print("RESPONSE\n", header)
         curl_clone(new_url.strip(), retry=retry+1)
     elif status_code >= 400: 
         sys.stdout.write(body)
