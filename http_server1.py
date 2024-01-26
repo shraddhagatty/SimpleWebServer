@@ -27,9 +27,13 @@ while True:
 
     try:
 
-        #b. Read the HTTP request from the connection socket and parse it. 
-        #print(f"Client connection : {client_connection}")
-        request = client_connection.recv(1024).decode('utf-8')
+        #b. Read the HTTP request from the connection socket and parse it.
+        request=""
+        while True:
+            req = client_connection.recv(1024).decode('utf-8')
+            request += req
+            if "\r\n\r\n" in request:
+                break
         filename = request.split()[1].split('/')[-1]
         
         #Check to see if the requested file requested exists (and ends with ".htm" or ".html").
@@ -46,6 +50,7 @@ while True:
             #print(content_length)
 
             response = f"HTTP/1.0 200 OK\r\nContent-Type: {content_type}\r\nContent-Length: {content_length}\r\n\r\n{content}"
+
         else:
             #e. If the file doesn’t exist, construct a HTTP error response (404 Not Found) and write it to the connection socket. If the file does exist, but does not end with ".htm" or "html", then write a "403 Forbidden" error response.
 

@@ -1,1 +1,0 @@
-GET /rfc2616.html HTTP/1.1
